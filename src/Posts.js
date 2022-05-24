@@ -1,8 +1,10 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
 import Post from "./Post";
 import { Link } from "react-router-dom";
 import { RoutePaths } from "./routes";
+import request, { gql } from "graphql-request";
+import { useQuery } from "react-query";
+import { getCacheKeyForAllStories } from "./utils/cache";
 
 function Posts() {
   const getAllStory = gql`
@@ -17,7 +19,9 @@ function Posts() {
     }
   `;
 
-  const { data } = useQuery(getAllStory);
+  const { data } = useQuery(getCacheKeyForAllStories(), () =>
+    request("http://localhost:8002/graphql", getAllStory)
+  );
   return (
     <>
       {data?.story.map((story) => (
